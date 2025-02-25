@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Indian Sign Language</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #818cf8;
+            --accent: #4f46e5;
+            --background: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(129, 140, 248, 0.1) 0, transparent 50%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 1.2rem;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .category-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .category-description {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .progress-container {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 8px;
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .lesson-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            padding: 2rem;
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+
+        .lesson-item {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--background);
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .lesson-item:hover {
+            transform: scale(1.05);
+            background: var(--primary);
+            color: white;
+        }
+
+        .lesson-item.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 0.8rem;
+            color: var(--accent);
+            background: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 90%;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .video-container {
+            margin-top: 1rem;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .back-button {
+            display: none;
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: var(--accent);
+        }
+
+        .error-message {
+            color: #ef4444;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header animate__animated animate__fadeIn">
+            <h1>Learn Indian Sign Language</h1>
+            <p>Start your journey into sign language with our interactive lessons</p>
+        </div>
+
+        <button class="back-button">← Back to Categories</button>
+
+        <div class="categories">
+            <div class="category-card animate__animated animate__fadeIn" data-category="letters">
+                <div class="category-icon">🔤</div>
+                <h2 class="category-title">Letters (A-Z)</h2>
+                <p class="category-description">Learn to sign the alphabet in ISL</p>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="category-card animate__animated animate__fadeIn animate__delay-1s" data-category="numbers">
+                <div class="category-icon">🔢</div>
+                <h2 class="category-title">Numbers (0-9)</h2>
+                <p class="category-description">Master numerical signs in ISL</p>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="category-card animate__animated animate__fadeIn animate__delay-2s" data-category="words">
+                <div class="category-icon">📚</div>
+                <h2 class="category-title">Common Words</h2>
+                <p class="category-description">Learn everyday words and phrases</p>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lesson-grid" id="lettersGrid"></div>
+        <div class="lesson-grid" id="numbersGrid"></div>
+        <div class="lesson-grid" id="wordsGrid"></div>
+    </div>
+
+    <div class="video-modal">
+        <div class="modal-content">
+            <span class="close-modal">×</span>
+            <h2 id="modalTitle" style="margin-bottom: 1rem;"></h2>
+            <div class="video-container">
+                <video id="lessonVideo" controls>
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="loading-spinner"></div>
+                <div class="error-message">Failed to load video. Please try again.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categories = document.querySelector('.categories');
+            const lessonGrids = document.querySelectorAll('.lesson-grid');
+            const backButton = document.querySelector('.back-button');
+            const modal = document.querySelector('.video-modal');
+            const closeModal = document.querySelector('.close-modal');
+            const videoElement = document.getElementById('lessonVideo');
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            const errorMessage = document.querySelector('.error-message');
+            
+            // Data for lessons
+            const lessonData = {
+                letters: Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),
+                numbers: Array.from('0123456789'),
+                words: ['Hello', 'Thank you', 'Please', 'Sorry', 'Good', 'Bad', 'Yes', 'No', 
+                       'Mother', 'Father', 'Friend', 'Love', 'Help', 'Learn', 'Eat', 'Drink']
+            };
+
+            // Progress tracking - using localStorage for persistence
+            let progress = {
+                letters: new Set(),
+                numbers: new Set(),
+                words: new Set()
+            };
+
+            // Load progress from localStorage
+            try {
+                const savedProgress = localStorage.getItem('islProgress');
+                if (savedProgress) {
+                    const parsed = JSON.parse(savedProgress);
+                    Object.keys(parsed).forEach(category => {
+                        progress[category] = new Set(parsed[category]);
+                    });
+                }
+            } catch (e) {
+                console.error('Failed to load progress:', e);
+            }
+
+            function saveProgress() {
+                try {
+                    const toSave = {};
+                    Object.keys(progress).forEach(category => {
+                        toSave[category] = Array.from(progress[category]);
+                    });
+                    localStorage.setItem('islProgress', JSON.stringify(toSave));
+                } catch (e) {
+                    console.error('Failed to save progress:', e);
+                }
+            }
+
+            function updateProgress(category) {
+                const total = lessonData[category].length;
+                const completed = progress[category].size;
+                const percentage = (completed / total) * 100;
+                const progressBar = document.querySelector(`[data-category="${category}"] .progress-bar`);
+                progressBar.style.width = `${percentage}%`;
+                saveProgress();
+            }
+
+            function createLessonGrid(category) {
+                const grid = document.getElementById(`${category}Grid`);
+                grid.innerHTML = '';
+                
+                lessonData[category].forEach(item => {
+                    const lessonItem = document.createElement('div');
+                    lessonItem.className = `lesson-item animate-fadeIn ${progress[category].has(item) ? 'completed' : ''}`;
+                    lessonItem.textContent = item;
+                    lessonItem.dataset.item = item;
+                    
+                    lessonItem.addEventListener('click', () => showLesson(category, item));
+                    grid.appendChild(lessonItem);
+                });
+            }
+
+            function showLesson(category, item) {
+                modal.style.display = 'flex';
+                document.getElementById('modalTitle').textContent = `Learn to sign "${item}"`;
+                loadingSpinner.style.display = 'block';
+                errorMessage.style.display = 'none';
+                
+                // Construct video URL
+                const videoUrl = `/videos/${category}/${item.toLowerCase()}.mp4`;
+                videoElement.src = videoUrl;
+                
+                // Handle video events
+                videoElement.load();
+                
+                videoElement.addEventListener('canplay', function onCanPlay() {
+                    loadingSpinner.style.display = 'none';
+                    videoElement.play();
+                    videoElement.removeEventListener('canplay', onCanPlay);
+                });
+                
+                videoElement.addEventListener('error', function onError() {
+                    loadingSpinner.style.display = 'none';
+                    errorMessage.style.display = 'block';
+                    videoElement.removeEventListener('error', onError);
+                });
+                
+                // Update progress when video is played
+                videoElement.addEventListener('play', function onPlay() {
+                    progress[category].add(item);
+                    updateProgress(category);
+                    document.querySelector(`#${category}Grid .lesson-item[data-item="${item}"]`)?.classList.add('completed');
+                    videoElement.removeEventListener('play', onPlay);
+                });
+            }
+
+            // Category click handlers
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const category = card.dataset.category;
+                    categories.style.display = 'none';
+                    createLessonGrid(category);
+                    document.getElementById(`${category}Grid`).style.display = 'grid';
+                    backButton.style.display = 'block';
+                });
+            });
+
+            // Back button handler
+            backButton.addEventListener('click', () => {
+                lessonGrids.forEach(grid => grid.style.display = 'none');
+                categories.style.display = 'grid';
+                backButton.style.display = 'none';
+            });
+
+            // Modal handlers
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+                videoElement.pause();
+                videoElement.currentTime = 0;
+                videoElement.src = '';
+                loadingSpinner.style.display = 'none';
+                errorMessage.style.display = 'none';
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal.click();
+                }
+            });
+
+            // Keyboard handlers
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    closeModal.click();
+                }
+            });
+
+            // Handle video preloading for better performance
+            let preloadedVideos = new Map();
+
+            function preloadVideo(category, item) {
+                const videoUrl = `/videos/${category}/${item.toLowerCase()}.mp4`;
+                if (!preloadedVideos.has(videoUrl)) {
+                    const preloadLink = document.createElement('link');
+                    preloadLink.rel = 'preload';
+                    preloadLink.as = 'video';
+                    preloadLink.href = videoUrl;
+                    document.head.appendChild(preloadLink);
+                    preloadedVideos.set(videoUrl, true);
+                }
+            }
+
+            // Preload videos when hovering over lesson items
+            document.addEventListener('mouseover', (e) => {
+                if (e.target.classList.contains('lesson-item')) {
+                    const category = e.target.closest('.lesson-grid').id.replace('Grid', '');
+                    const item = e.target.dataset.item;
+                    preloadVideo(category, item);
+                }
+            });
+
+            // Handle window focus for video playback
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && videoElement) {
+                    videoElement.pause();
+                }
+            });
+
+            // Initialize progress bars
+            Object.keys(lessonData).forEach(updateProgress);
+
+            // Save progress before user leaves the page
+            window.addEventListener('beforeunload', saveProgress);
+
+            // Handle network status
+            window.addEventListener('online', () => {
+                errorMessage.style.display = 'none';
+                if (videoElement.src) {
+                    videoElement.load();
+                }
+            });
+
+            window.addEventListener('offline', () => {
+                errorMessage.textContent = 'No internet connection. Please check your network.';
+                errorMessage.style.display = 'block';
+            });
+
+            // Initialize touch events for mobile devices
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            document.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+
+            document.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const swipeDistance = touchEndX - touchStartX;
+                
+                if (Math.abs(swipeDistance) > swipeThreshold) {
+                    if (swipeDistance > 0 && backButton.style.display === 'block') {
+                        // Swipe right - go back
+                        backButton.click();
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
